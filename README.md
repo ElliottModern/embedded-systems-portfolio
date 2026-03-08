@@ -81,13 +81,11 @@ Each project builds on the previous one to gradually introduce more advanced emb
 # Repository Structure
 
 embedded-systems-portfolio/
-│
-├── project01_register_level_blink/
-├── project02_timer_interrupt_blink/
-├── project03_multiple_timer_events/
-├── project04_button_interrupt_led_toggle/
-│
-└── docs/
+- project01_register_level_blink/
+- project02_timer_interrupt_blink/
+- project03_multiple_timer_events/
+- project04_button_interrupt_led_toggle/
+- docs/
 
 
 Each project folder contains:
