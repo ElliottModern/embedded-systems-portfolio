@@ -1,0 +1,82 @@
+Title
+
+Project 03 - STM32 Multiple Timer Events and Periodic Task Scheduling
+
+Goal
+
+Use a hardware timer interrupt to drive multiple periodic software events from a single timer source.
+
+Hardware
+
+STM32 NUCLEO-F446RE
+onboard LD2 LED (PA5)
+
+Key concepts used
+
+periodic interrupt scheduling
+software counters driven by timer interrupts
+multi-rate timing from a single timer
+non-blocking firmware architecture
+
+Timer configuration
+
+Timer used
+TIM2
+
+Clock source
+84 MHz
+
+Prescaler
+8399
+
+Timer frequency
+84 MHz / (8399 + 1) = 10 kHz
+
+Auto-reload value
+999
+
+Interrupt frequency
+10 kHz / 1000 = 10 Hz
+
+Interrupt period
+100 ms
+
+Software timers implemented
+100 ms task
+500 ms task
+1 second task
+
+Global counters
+volatile uint32_t tick_100ms = 0;
+volatile uint32_t tick_500ms = 0;
+volatile uint32_t tick_1s = 0;
+
+Interrupt service routine
+
+void TIM2_IRQHandler(void)
+{
+    if (TIM2->SR & (1 << 0))
+    {
+        TIM2->SR &= ~(1 << 0);
+
+        tick_100ms++;
+
+        if (tick_100ms % 5 == 0)
+        {
+            tick_500ms++;
+            GPIOA->ODR ^= (1 << 5);
+        }
+
+        if (tick_100ms % 10 == 0)
+        {
+            tick_1s++;
+        }
+    }
+}
+
+Main loop example
+
+while (1)
+{
+    // background tasks can run here
+}
