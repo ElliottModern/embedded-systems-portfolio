@@ -1,0 +1,40 @@
+Title
+
+Project 01 - STM32 Register-Level LED Blink via BSRR
+
+Goal
+
+Blink the onboard LD2 LED on the STM32 NUCLEO-F446RE using direct register writes.
+
+Hardware
+
+STM32 NUCLEO-F446RE
+onboard LD2 LED (PA5)
+
+Key concepts used
+
+GPIO output mode
+BSRR atomic set/reset
+CubeMX-generated initialization
+direct register programming in C
+
+Core code:
+
+static void delay(volatile uint32_t count)
+{
+	while (count--)
+	{
+		__NOP();
+	}
+}
+
+while (1)
+{
+
+	GPIOA->BSRR = (1U << 5);            // Set PA5 high
+	delay(8000000);
+
+	GPIOA->BSRR = (1U << (5U + 16U));   // Reset PA5 low
+	delay(800000);
+
+}
