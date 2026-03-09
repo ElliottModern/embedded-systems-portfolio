@@ -1,0 +1,99 @@
+Title
+
+Project 01A - STM32 Full Register-Level GPIO LED Blink
+
+Goal
+
+Blink the onboard LD2 LED (PA5) on the STM32 NUCLEO-F446RE using direct register configuration and control, without relying on HAL GPIO initialization.
+
+Hardware
+
+STM32 NUCLEO-F446RE
+onboard LD2 LED (PA5)
+
+Key concepts used
+
+Memory-mapped register programming
+Peripheral clock enabling (RCC)
+GPIO mode configuration (MODER)
+Output type configuration (OTYPER)
+Pull-up/pull-down configuration (PUPDR)
+Output speed configuration (OSPEEDR)
+Atomic GPIO output control (BSRR)
+Basic firmware execution loop
+
+Registers Used
+
+RCC Peripheral Clock Enable
+RCC->AHB1ENR
+Used to enable the clock for GPIOA.
+Bit 0 → GPIOAEN
+Example:
+RCC->AHB1ENR |= (1U << 0);
+
+GPIO Mode Register
+GPIOA->MODER
+Each pin uses 2 bits.
+MODER[11:10] → PA5
+Mode encoding:
+00 = Input
+01 = Output
+10 = Alternate Function
+11 = Analog
+Configuration used:
+01 → General Purpose Output
+
+Output Type Register
+GPIOA->OTYPER
+Controls output driver type.
+0 = Push-Pull
+1 = Open-Drain
+Configuration used:
+Push-Pull
+
+Pull-Up / Pull-Down Register
+GPIOA->PUPDR
+Controls internal resistors.
+00 = No pull
+01 = Pull-up
+10 = Pull-down
+Configuration used:
+No pull
+
+Output Speed Register
+GPIOA->OSPEEDR
+Controls GPIO slew rate.
+Configuration used:
+Low speed
+
+Bit Set Reset Register (BSRR)
+GPIOA->BSRR
+Allows atomic GPIO writes.
+Lower 16 bits:
+Set pin HIGH
+Upper 16 bits:
+Reset pin LOW
+Example:
+GPIOA->BSRR = (1U << 5);        // Set PA5
+GPIOA->BSRR = (1U << 21);       // Reset PA5
+
+Core Code Snippet
+
+GPIO configuration:
+
+RCC->AHB1ENR |= (1U << 0);
+
+GPIOA->MODER &= ~(3U << (5U * 2U));
+GPIOA->MODER |=  (1U << (5U * 2U));
+
+GPIOA->OTYPER &= ~(1U << 5);
+GPIOA->PUPDR  &= ~(3U << (5U * 2U));
+GPIOA->OSPEEDR &= ~(3U << (5U * 2U));
+
+LED control:
+
+GPIOA->BSRR = (1U << 5);
+delay(...);
+
+GPIOA->BSRR = (1U << (5 + 16));
+delay(...);
